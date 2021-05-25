@@ -14,6 +14,7 @@ Polynom::~Polynom()
 
 Polynom::Polynom(int size)
 {
+    size = (int)size;
     if (size > 40)
     {
         cout << " Entered degree was too big, initial value shrinked to 40" << endl;
@@ -110,19 +111,19 @@ double Polynom::get_coefficents(int i)
         return 0.0;
 }
 
-void Polynom::operator*(int p)
+void Polynom::operator*(double p)
 {
     for (int i = 0; i <= degree; i++)
         coefficents[i] *= p;
 }
 
-void Polynom::operator+(int p)
+void Polynom::operator+(double p)
 {
     for (int i = 0; i <= degree; i++)
         coefficents[i] += p;
 }
 
-void Polynom::operator-(int p)
+void Polynom::operator-(double p)
 {
     for (int i = 0; i <= degree; i++)
         coefficents[i] -= p;

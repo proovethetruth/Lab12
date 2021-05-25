@@ -22,9 +22,9 @@ public:
     int get_degree();                   // функция получения степени полинома
     double get_coefficents(int);        // функция получения коэффициента при i-й степени
 
-    void operator+(int p);              // оператор сложения
-    void operator-(int p);              // оператор вычитания
-    void operator*(int p);              // оператор умножения
+    void operator+(double p);              // оператор сложения
+    void operator-(double p);              // оператор вычитания
+    void operator*(double p);              // оператор умножения
     void operator=(const Polynom&);     // оператор приравнивания
 
     friend ostream& operator<< (ostream& s, const Polynom& c);  // перегруженный оператор вывода
