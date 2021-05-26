@@ -1,5 +1,6 @@
 
-#include "Lab12.h"
+#include "Polynom.h"
+#include <iostream>
 
 Polynom::Polynom()
 {
@@ -17,19 +18,19 @@ Polynom::Polynom(int size)
     size = (int)size;
     if (size > 40)
     {
-        cout << " Entered degree was too big, initial value shrinked to 40" << endl;
+        std::cout << " ¬ведЄнна€ степень слишком больша€, первоначальное значение уменьшено до 40" << std::endl;
         size = 40;
     }
 
     int i;
     degree = size;
-    coefficents = (double*) calloc(degree + 1, sizeof(double) * (degree + 1));
+    coefficents = (double*)calloc(degree + 1, sizeof(double) * (degree + 1));
 }
 
 Polynom::Polynom(const Polynom& f)
 {
     degree = f.degree;
-    coefficents = (double*) malloc(sizeof(double) * (degree + 1));
+    coefficents = (double*)malloc(sizeof(double) * (degree + 1));
 
     if (coefficents != NULL) {
         for (int i = 0; i <= degree; i++)
@@ -47,7 +48,7 @@ void Polynom::operator=(const Polynom& f) {
     }
 }
 
-istream& operator>>(istream& s, Polynom& c)
+std::istream& operator>>(std::istream& s, Polynom& c)
 {
     for (int i = 0; i <= c.degree; i++)
         s >> c.coefficents[i];
@@ -55,7 +56,7 @@ istream& operator>>(istream& s, Polynom& c)
     return s;
 }
 
-ostream& operator<<(ostream& s, const Polynom& c)
+std::ostream& operator<<(std::ostream& s, const Polynom& c)
 {
     int i, n = 0;
 
@@ -105,26 +106,57 @@ int Polynom::get_degree()
 
 double Polynom::get_coefficents(int i)
 {
-    if (i <= degree)
+    if ((i <= degree) && (i >= 0))
         return coefficents[i];
     else
         return 0.0;
 }
 
-void Polynom::operator*(double p)
+Polynom Polynom::operator*(double p)
 {
+    Polynom Z = *this;
     for (int i = 0; i <= degree; i++)
-        coefficents[i] *= p;
+        Z.coefficents[i] *= p;
+
+    return Z;
 }
 
-void Polynom::operator+(double p)
+Polynom Polynom::operator+(const Polynom& t)
 {
-    for (int i = 0; i <= degree; i++)
-        coefficents[i] += p;
+    int i;
+    if (degree >= t.degree)
+    {
+        Polynom Z = *this;
+        for (i = 0; i <= degree; i++)
+            Z.coefficents[i] = coefficents[i] + t.coefficents[i];
+        return Z;
+    }
+    else
+    {
+        Polynom Z = t;
+        for (i = 0; i <= degree; i++)
+            Z.coefficents[i] = t.coefficents[i] + coefficents[i];
+        return Z;
+    }
 }
 
-void Polynom::operator-(double p)
+Polynom Polynom::operator-(const Polynom& t)
 {
-    for (int i = 0; i <= degree; i++)
-        coefficents[i] -= p;
+    int i;
+    if (degree >= t.degree)
+    {
+        Polynom Z = *this;
+        for (i = 0; i <= t.degree; i++)
+            Z.coefficents[i] = coefficents[i] - t.coefficents[i];
+        return Z;
+    }
+    else
+    {
+        Polynom Z(t.degree);
+        for (i = 0; i <= degree; i++)
+            Z.coefficents[i] = -t.coefficents[i] + coefficents[i];
+        for (i = degree + 1; i <= t.degree; i++)
+            Z.coefficents[i] = -t.coefficents[i];
+        return Z;
+    }
 }
