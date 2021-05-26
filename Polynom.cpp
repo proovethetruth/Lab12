@@ -15,16 +15,26 @@ Polynom::~Polynom()
 
 Polynom::Polynom(int size)
 {
-    size = (int)size;
+    while (!std::cin.good() || size < 0)
+    {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        if (size < INT_MAX)
+            std::cout << " Некорректный ввод. Степень полинома - целое, положительное число. Попробуйте ещё раз.\n\n Введите степень полинома А: ";
+        else
+            std::cout << " Некорректный ввод. Число слишком большое. Попробуйте ещё раз.\n\n Введите степень полинома А: ";
+        std::cin >> size;
+    }
     if (size > 40)
     {
         std::cout << " Введённая степень слишком большая, первоначальное значение уменьшено до 40" << std::endl;
         size = 40;
     }
-
-    int i;
     degree = size;
     coefficents = (double*)calloc(degree + 1, sizeof(double) * (degree + 1));
+
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
 Polynom::Polynom(const Polynom& f)
@@ -51,8 +61,19 @@ void Polynom::operator=(const Polynom& f) {
 std::istream& operator>>(std::istream& s, Polynom& c)
 {
     for (int i = 0; i <= c.degree; i++)
+    {
         s >> c.coefficents[i];
+        while (!(s.good()))
+        {
+            s.clear();
+            s.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << " Некорректный ввод. Коэффиценты полинома - вещественные числа. Попробуйте ещё раз.\n\n Введите коэффиценты полинома А: ";
+            s >> c.coefficents[i];
+        }
+    }
 
+    s.clear();
+    s.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     return s;
 }
 
@@ -106,7 +127,21 @@ int Polynom::get_degree()
 
 double Polynom::get_coefficents(int i)
 {
-    if ((i <= degree) && (i >= 0))
+    while (!std::cin.good() || (i < 0))
+    {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        if (i < INT_MAX)
+            std::cout << " Некорректный ввод. Требуется ввести неотрицательное число. Попробуйте ещё раз.\n\n Введите индекс коэффицента полинома (демонстрация метода get_coefficents): ";
+        else
+            std::cout << " Некорректный ввод. Число слишком большое. Попробуйте ещё раз.\n\n Введите индекс коэффицента полинома (демонстрация метода get_coefficents): ";
+        std::cin >> i;
+    }
+
+    std::cin.clear();
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+
+    if (i <= degree)
         return coefficents[i];
     else
         return 0.0;
@@ -114,6 +149,17 @@ double Polynom::get_coefficents(int i)
 
 Polynom Polynom::operator*(double p)
 {
+    while (!std::cin.good())
+    {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        if (p < INT_MAX)
+            std::cout << " Некорректный ввод. Требуется ввести число. Попробуйте ещё раз.\n\n Введите число: ";
+        else
+            std::cout << " Некорректный ввод. Число слишком большое. Попробуйте ещё раз.\n\n Введите число: ";
+        std::cin >> p;
+    }
+
     Polynom Z = *this;
     for (int i = 0; i <= degree; i++)
         Z.coefficents[i] *= p;

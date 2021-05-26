@@ -25,11 +25,6 @@ public:
 
     friend std::ostream& operator<< (std::ostream& s, const Polynom& c);
     friend std::istream& operator>> (std::istream& s, Polynom& c);
-
-    double& operator()(int i)
-    {
-        return coefficents[i];
-    }
 };
 
 #endif
