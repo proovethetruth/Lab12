@@ -1,6 +1,5 @@
 
 #include "Polynom.h"
-#include <iostream>
 
 Polynom::Polynom()
 {
@@ -10,29 +9,27 @@ Polynom::Polynom()
 
 Polynom::~Polynom()
 {
-    delete[] coefficents;
+    if(coefficents)
+        delete[] coefficents;
 }
 
-Polynom::Polynom(int size)
+Polynom::Polynom(int size, int &error)
 {
-    while (!std::cin.good() || size < 0)
+    degree = 0;
+    coefficents = NULL;
+    if (size < 0)
     {
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        if (size < INT_MAX)
-            std::cout << " Некорректный ввод. Степень полинома - целое, положительное число. Попробуйте ещё раз.\n\n Введите степень полинома А: ";
-        else
-            std::cout << " Некорректный ввод. Число слишком большое. Попробуйте ещё раз.\n\n Введите степень полинома А: ";
-        std::cin >> size;
+        error = 1;
+        return;
     }
-    if (size > 40)
+
+    if (size > 40 || size > INT_MAX)
     {
         std::cout << " Введённая степень слишком большая, первоначальное значение уменьшено до 40" << std::endl;
         size = 40;
     }
     degree = size;
     coefficents = (double*)calloc(degree + 1, sizeof(double) * (degree + 1));
-
     std::cin.clear();
     std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
@@ -46,7 +43,7 @@ Polynom::Polynom(const Polynom& f)
         for (int i = 0; i <= degree; i++)
             coefficents[i] = f.coefficents[i];
     }
-}
+}                               // +
 
 void Polynom::operator=(const Polynom& f) {
     degree = f.degree;
@@ -56,7 +53,7 @@ void Polynom::operator=(const Polynom& f) {
         for (int i = 0; i <= degree; i++)
             coefficents[i] = f.coefficents[i];
     }
-}
+}                        // +
 
 std::istream& operator>>(std::istream& s, Polynom& c)
 {
@@ -118,48 +115,36 @@ std::ostream& operator<<(std::ostream& s, const Polynom& c)
     else
         s << 0;
     return s;
-}
+}      //
 
-int Polynom::get_degree()
+int Polynom::get_degree() const
 {
     return degree;
 }
 
-double Polynom::get_coefficents(int i)
+double Polynom::get_coefficents(int i, int &error) const
 {
-    while (!std::cin.good() || (i < 0))
-    {
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        if (i < INT_MAX)
-            std::cout << " Некорректный ввод. Требуется ввести неотрицательное число. Попробуйте ещё раз.\n\n Введите индекс коэффицента полинома (демонстрация метода get_coefficents): ";
-        else
-            std::cout << " Некорректный ввод. Число слишком большое. Попробуйте ещё раз.\n\n Введите индекс коэффицента полинома (демонстрация метода get_coefficents): ";
-        std::cin >> i;
-    }
-
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-
-    if (i <= degree)
+    if ((i <= degree) && (i >= 0) && coefficents)
         return coefficents[i];
     else
-        return 0.0;
+    {
+        error = 1;
+        return -1;
+    }
 }
 
-Polynom Polynom::operator*(double p)
+void Polynom::set_coefficents(double num, int i, int& error)
 {
-    while (!std::cin.good())
+    if (!coefficents || i < 0 || i > INT_MAX || !num)
     {
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        if (p < INT_MAX)
-            std::cout << " Некорректный ввод. Требуется ввести число. Попробуйте ещё раз.\n\n Введите число: ";
-        else
-            std::cout << " Некорректный ввод. Число слишком большое. Попробуйте ещё раз.\n\n Введите число: ";
-        std::cin >> p;
+        error = 1;
+        return;
     }
+    coefficents[i] = num;
+}
 
+Polynom Polynom::operator*(double p) const
+{
     Polynom Z = *this;
     for (int i = 0; i <= degree; i++)
         Z.coefficents[i] *= p;
@@ -167,7 +152,7 @@ Polynom Polynom::operator*(double p)
     return Z;
 }
 
-Polynom Polynom::operator+(const Polynom& t)
+Polynom Polynom::operator+(const Polynom& t) const
 {
     int i;
     if (degree >= t.degree)
@@ -186,23 +171,7 @@ Polynom Polynom::operator+(const Polynom& t)
     }
 }
 
-Polynom Polynom::operator-(const Polynom& t)
+Polynom Polynom::operator-(const Polynom& t) const
 {
-    int i;
-    if (degree >= t.degree)
-    {
-        Polynom Z = *this;
-        for (i = 0; i <= t.degree; i++)
-            Z.coefficents[i] = coefficents[i] - t.coefficents[i];
-        return Z;
-    }
-    else
-    {
-        Polynom Z(t.degree);
-        for (i = 0; i <= degree; i++)
-            Z.coefficents[i] = -t.coefficents[i] + coefficents[i];
-        for (i = degree + 1; i <= t.degree; i++)
-            Z.coefficents[i] = -t.coefficents[i];
-        return Z;
-    }
+    return *this + t * (-1);
 }
