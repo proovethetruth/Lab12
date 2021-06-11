@@ -53,11 +53,11 @@ void Polynom::operator=(const Polynom& f) {
         for (int i = 0; i <= degree; i++)
             coefficents[i] = f.coefficents[i];
     }
-}                        // +
+}
 
 std::istream& operator>>(std::istream& s, Polynom& c)
 {
-    for (int i = 0; i <= c.degree; i++)
+    for (int i = c.degree; i >= 0; i--)
     {
         s >> c.coefficents[i];
         while (!(s.good()))
@@ -68,7 +68,6 @@ std::istream& operator>>(std::istream& s, Polynom& c)
             s >> c.coefficents[i];
         }
     }
-
     s.clear();
     s.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     return s;
@@ -151,6 +150,53 @@ Polynom Polynom::operator*(double p) const
 
     return Z;
 }
+
+Polynom Polynom::operator/(const Polynom& t) const
+{
+    return divide_poly(*this, t);
+}
+
+Polynom divide_poly(const Polynom a, const Polynom b)
+{
+    int i = 0, y = 0, error = 0;
+    double x = 0;
+    while (a.degree >= b.degree)
+    {
+        x = floor(a.coefficents[i] / b.coefficents[i]);
+        y = a.degree - b.degree;
+
+        Polynom temp(y, error);
+        for (int j = 0; j < temp.degree; j++)
+            temp.coefficents[j] = b.coefficents[j] * x;
+
+        for (int q = 0; q < temp.degree; q++)
+            a.coefficents[q] -= b.coefficents[q];
+       shrink_to_fit(a);
+    }
+    return a;
+}
+
+Polynom shrink_to_fit(Polynom& a) {
+    int counter = 0;
+    for (int i = 0; i < a.get_degree(); i++)
+    {
+        if (a.coefficents[i] == 0)
+        {
+            counter++;
+            if (a.coefficents[i + 1] != 0)
+            {
+                break;
+            }
+        }
+    }
+    for (int z = 0; (z + counter) < a.degree; z++)
+    {
+        a.coefficents[z] = a.coefficents[z + counter];
+    }
+    a.degree -= counter;
+    return a;
+}
+
 
 Polynom Polynom::operator+(const Polynom& t) const
 {
